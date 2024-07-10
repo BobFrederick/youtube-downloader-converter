@@ -1,4 +1,6 @@
+import os
 import pytube
+import file_converter
 
 def download_video(url, resolution):
     itag = choose_resolution(resolution)
@@ -14,6 +16,25 @@ def download_videos(urls, resolution):
 def download_playlist(url, resolution):
     playlist = pytube.Playlist(url)
     download_videos(playlist.video_urls, resolution)
+
+
+def download_playlist_audio(url):
+    playlist = pytube.Playlist(url)
+    # get playlist title
+    playlist_title = playlist.title
+    print(f"Downloading playlist: {playlist_title}")
+    # remove special characters from the title
+    playlist_title = "".join(x for x in playlist_title if x.isalnum() or x in [" ", "-", "_"]).rstrip()
+    # create a folder with the playlist title in the /downloads folder
+    if os.path.exists(f"downloads/{playlist_title}") is False:
+        os.mkdir(f"downloads/{playlist_title}")
+    for i, video in enumerate(playlist.videos):
+        print(f"----Downloading {video.title} - {video.author} ({i + 1}/{len(playlist.video_urls)})...")
+        audio_file_stream = video.streams.get_audio_only()
+        if audio_file_stream is None:
+            continue
+        audio_file_stream.download(f"downloads/{playlist_title}")
+
 
 def choose_resolution(resolution):
     if resolution in ["low", "360", "360p"]:
