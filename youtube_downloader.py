@@ -27,7 +27,7 @@ def download_playlist_audio(url):
     playlist_title = "".join(x for x in playlist_title if x.isalnum() or x in [" ", "-", "_"]).rstrip()
     # create a folder with the playlist title in the /downloads folder
     if os.path.exists(f"downloads/{playlist_title}") is False:
-        os.mkdir(f"downloads/{playlist_title}")
+        os.makedirs(f"downloads/{playlist_title}", exist_ok=True)
     for i, video in enumerate(playlist.videos):
         print(f"----Downloading {video.title} - {video.author} ({i + 1}/{len(playlist.video_urls)})...")
         audio_file_stream = video.streams.get_audio_only()
