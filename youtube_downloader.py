@@ -1,6 +1,5 @@
 import os
 import pytube
-import file_converter
 
 def download_video(url, resolution):
     itag = choose_resolution(resolution)
@@ -30,10 +29,15 @@ def download_playlist_audio(url):
         os.makedirs(f"downloads/{playlist_title}", exist_ok=True)
     for i, video in enumerate(playlist.videos):
         print(f"----Downloading {video.title} - {video.author} ({i + 1}/{len(playlist.video_urls)})...")
-        audio_file_stream = video.streams.get_audio_only()
-        if audio_file_stream is None:
+        try:
+            audio_file_stream = video.streams.get_audio_only()
+            if audio_file_stream is None:
+                continue
+            audio_file_stream.download(f"downloads/{playlist_title}")
+        except:
+            print(f"Error downloading {video.title} - {video.author} ({i + 1}/{len(playlist.video_urls)})")
             continue
-        audio_file_stream.download(f"downloads/{playlist_title}")
+    print(f"Download of {playlist_title} finished!")
 
 
 def choose_resolution(resolution):
